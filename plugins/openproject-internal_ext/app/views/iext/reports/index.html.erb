@@ -1,0 +1,7 @@
+<%= render layout: 'iext/chrome', locals: { title: t('label_iext_reports') } do %>
+  <ul>
+    <li><%= link_to t('iext.reports.progress'), iext_reports_progress_path %> · <%= link_to 'CSV', iext_reports_progress_path(format: :csv) %></li>
+    <li><%= link_to t('iext.reports.labor'), iext_reports_labor_path %> · <%= link_to 'CSV', iext_reports_labor_path(format: :csv) %></li>
+    <li><%= link_to t('iext.reports.utilization'), iext_reports_utilization_path %> · <%= link_to 'CSV', iext_reports_utilization_path(format: :csv) %></li>
+  </ul>
+<% end %>

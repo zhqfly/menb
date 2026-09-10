@@ -1,0 +1,41 @@
+<%= render layout: 'iext/chrome', locals: { title: t('label_iext_gantt_flow') } do %>
+  <div class="iext-toolbar">
+    <% if iext_manager?(@project) || iext_admin? %>
+      <%= button_to t('iext.apply_shift'), iext_gantt_flow_apply_shift_path(project_id: @project.id), method: :post, class: 'button' %>
+      <%= button_to t('iext.save_baseline'), iext_gantt_flow_save_baseline_path(project_id: @project.id), method: :post, class: 'button' %>
+      <% @templates.each do |tpl| %>
+        <%= button_to "#{t('iext.apply_template')}: #{tpl.name}", iext_gantt_flow_apply_template_path(project_id: @project.id, template_id: tpl.id), method: :post, class: 'button -highlight' %>
+      <% end %>
+    <% end %>
+  </div>
+  <h3>关键路径（CPM）</h3>
+  <table class="generic-table">
+    <thead><tr><th>任务</th><th>工期</th><th>ES</th><th>EF</th><th>Slack</th><th>关键</th></tr></thead>
+    <tbody>
+      <% @nodes.each do |n| %>
+        <tr>
+          <td><%= n.wp.subject %></td>
+          <td><%= n.ef - n.es %></td>
+          <td><%= n.es %></td>
+          <td><%= n.ef %></td>
+          <td><%= n.slack %></td>
+          <td><%= n.critical ? '是' : '' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @shifts.any? %>
+    <h3>建议顺延</h3>
+    <ul>
+      <% @shifts.each do |s| %>
+        <li><%= s[:work_package].subject %>：<%= s[:from] %> → <%= s[:to] %>（前置 <%= s[:predecessor].subject %>）</li>
+      <% end %>
+    </ul>
+  <% end %>
+  <h3>进度基线</h3>
+  <ul>
+    <% @baselines.each do |b| %>
+      <li><%= b.version %> — <%= l(b.created_at) %>（<%= Array(b.snapshot).size %> 条任务）</li>
+    <% end %>
+  </ul>
+<% end %>

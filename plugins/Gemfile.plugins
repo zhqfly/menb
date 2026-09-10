@@ -1,0 +1,3 @@
+# 由官方 Gemfile 自动 eval。仅追加 path 插件，不改 Gemfile.lock 中的主版本约束。
+# 路径相对于 /app（容器内工作目录）。
+gem 'openproject-internal_ext', path: 'plugins/openproject-internal_ext'

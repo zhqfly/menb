@@ -1,0 +1,33 @@
+<%= render layout: 'iext/chrome', locals: { title: t('label_iext_evm') } do %>
+  <% if iext_member_only?(@project) %>
+    <p>本人工时合计：<b><%= @own_hours %></b></p>
+  <% else %>
+    <div class="iext-kpis">
+      <% %i[bac pv ac ev spi cpi eac cv sv].each do |k| %>
+        <div class="iext-kpi"><span><%= t("iext.#{k}") %></span><b><%= @metrics[k] %></b></div>
+      <% end %>
+    </div>
+    <p>人工实际 <%= @metrics.dig(:breakdown, :labor_ac) %>；单位成本 <%= @metrics.dig(:breakdown, :unit_ac) %>；追加费用 <%= @metrics.dig(:breakdown, :extra_ac) %></p>
+    <div class="iext-toolbar">
+      <%= button_to t('iext.take_snapshot'), iext_evm_snapshot_path(project_id: @project.id), method: :post, class: 'button -highlight' if iext_manager?(@project) || iext_admin? %>
+      <%= link_to t('button_export'), iext_evm_export_path(project_id: @project.id), class: 'button' %>
+    </div>
+    <h3>历史快照</h3>
+    <table class="generic-table">
+      <thead><tr><th>日期</th><th>PV</th><th>AC</th><th>EV</th><th>SPI</th><th>CPI</th><th>EAC</th></tr></thead>
+      <tbody>
+        <% @snapshots.each do |s| %>
+          <tr>
+            <td><%= s.as_of %></td>
+            <td><%= s.pv %></td>
+            <td><%= s.ac %></td>
+            <td><%= s.ev %></td>
+            <td><%= s.spi %></td>
+            <td><%= s.cpi %></td>
+            <td><%= s.eac %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+<% end %>

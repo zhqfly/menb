@@ -56,7 +56,10 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 COPY docker/openproject/ensure-native-modules.sh /usr/local/bin/ensure-native-modules
-RUN chmod 0755 /usr/local/bin/ensure-native-modules
+COPY docker/openproject/install-plugins.sh /usr/local/bin/install-plugins
+COPY plugins /app/plugins
+RUN chmod 0755 /usr/local/bin/ensure-native-modules /usr/local/bin/install-plugins \
+ && /usr/local/bin/install-plugins
 
 # 官方 entrypoint 会按需 gosu 到 app 用户
 WORKDIR /app

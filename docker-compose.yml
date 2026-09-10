@@ -37,7 +37,7 @@ x-op-app: &op_app
     OPENPROJECT_DEFAULT__LANGUAGE: "${OPENPROJECT_DEFAULT__LANGUAGE:-zh-CN}"
     OPENPROJECT_AVAILABLE__LANGUAGES: "${OPENPROJECT_AVAILABLE__LANGUAGES:-zh-CN,en}"
     OPENPROJECT_DISABLED__MODULES: "${OPENPROJECT_DISABLED__MODULES:-}"
-    OPENPROJECT_DEFAULT__PROJECTS__MODULES: "${OPENPROJECT_DEFAULT__PROJECTS__MODULES:-work_package_tracking,news,wiki,calendar,gantt,costs,reporting,budgets,meetings,board_view}"
+    OPENPROJECT_DEFAULT__PROJECTS__MODULES: "${OPENPROJECT_DEFAULT__PROJECTS__MODULES:-work_package_tracking,news,wiki,calendar,gantt,costs,reporting,budgets,meetings,board_view,iext_enterprise}"
     OPENPROJECT_INSTALLATION__TYPE: docker
     RAILS_ENV: production
     RAILS_LOG_TO_STDOUT: "${RAILS_LOG_TO_STDOUT:-1}"

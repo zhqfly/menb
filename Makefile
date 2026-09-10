@@ -1,4 +1,4 @@
-.PHONY: bootstrap start start-dev stop logs console modules psql rebuild
+.PHONY: bootstrap start start-dev stop logs console modules psql rebuild test-iext
 
 bootstrap:
 	chmod +x scripts/*.sh docker/postgres/initdb/*.sh docker/openproject/*.sh
@@ -27,3 +27,6 @@ psql:
 
 rebuild:
 	docker compose build --no-cache
+
+test-iext:
+	ruby plugins/openproject-internal_ext/test/iext_math_test.rb

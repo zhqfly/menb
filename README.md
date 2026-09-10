@@ -126,3 +126,27 @@ gem 'budgets',               path: 'modules/budgets'
 3. 不要把基础镜像换成随意的第三方「完整汉化包」，以免替换掉官方 costs gem
 
 若必须从源码构建，请 clone `https://github.com/opf/openproject.git` 并 `git checkout v12.5.8`，使用仓库内 `docker/prod/Dockerfile`，**不要改 `Gemfile.modules`，不要 `apt-get upgrade`**。日常部署请用本仓库基于官方镜像的 Dockerfile。
+
+## 企业插件（不改核心）
+
+插件目录：`plugins/openproject-internal_ext`，经 `Gemfile.plugins` 注入官方镜像，**不替换** costs / reporting / budgets。
+
+| 入口 | 说明 |
+| --- | --- |
+| 顶栏「资源负载」 | 全员热力图、空闲/超负荷、冲突扫描、利用率 CSV |
+| 顶栏「企业报表」 | 进度复盘 / 人力成本 / 资源利用率 |
+| 项目「挣值与成本」 | PV/AC/EV/SPI/CPI/EAC + 基线快照；成员仅看本人工时 |
+| 项目「费用台账」 | 物料/外包/差旅/杂费（独立表 `iext_*`，不覆盖原生 cost_entries） |
+| 项目「进度与流程」 | CPM 关键路径、依赖顺延、进度基线、立项→复盘模板 |
+| 管理「企业日历与排班」 | 节假日/调休、按人按星期容量 |
+
+权限：管理员全操作；具备 `edit_project` / `manage_iext_cost_items` 的项目经理可改成本与顺延；普通成员填报原生工时、只看个人数据。操作写入 `iext_audit_logs`。
+
+公式自测（无需 Docker）：
+
+```bash
+ruby plugins/openproject-internal_ext/test/iext_math_test.rb
+```
+
+说明：官方 12.5.8 实际为 **Rails 7.0** 与当时捆绑的 Angular 前端，不能降到 Rails 6 / Angular 9。本插件新增页为 Rails 视图，避免重编官方前端包。原生甘特仍走原 Angular 模块；CPM/基线/顺延在插件页完成。
+
