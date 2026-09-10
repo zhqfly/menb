@@ -13,6 +13,7 @@ x-op-build: &op_build
   dockerfile: Dockerfile
   args:
     OPENPROJECT_IMAGE_TAG: ${OPENPROJECT_IMAGE_TAG:-12.5.8}
+    OPENPROJECT_IMAGE: ${OPENPROJECT_IMAGE:-openproject/community:12.5.8}
     DEBIAN_MIRROR: ${DEBIAN_MIRROR:-https://mirrors.aliyun.com/debian}
     DEBIAN_SECURITY_MIRROR: ${DEBIAN_SECURITY_MIRROR:-https://mirrors.aliyun.com/debian-security}
     TZ: ${TZ:-Asia/Shanghai}
