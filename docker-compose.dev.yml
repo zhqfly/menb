@@ -1,0 +1,25 @@
+# 本地开发 / 调试覆盖：./scripts/start-dev.sh
+
+services:
+  web:
+    environment:
+      OPENPROJECT_LOG__LEVEL: debug
+      RAILS_LOG_LEVEL: debug
+      OPENPROJECT_LOG__REQUESTS: "true"
+    ports:
+      - "8081:8080"
+    stdin_open: true
+    tty: true
+
+  worker:
+    environment:
+      OPENPROJECT_LOG__LEVEL: debug
+      RAILS_LOG_LEVEL: debug
+
+  cron:
+    environment:
+      OPENPROJECT_LOG__LEVEL: debug
+
+  seeder:
+    environment:
+      OPENPROJECT_LOG__LEVEL: debug

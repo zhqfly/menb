@@ -1,0 +1,195 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+    tag: "{{.Name}}"
+
+x-op-restart: &restart_policy
+  restart: unless-stopped
+
+x-op-build: &op_build
+  context: .
+  dockerfile: Dockerfile
+  args:
+    OPENPROJECT_IMAGE_TAG: ${OPENPROJECT_IMAGE_TAG:-12.5.8}
+    DEBIAN_MIRROR: ${DEBIAN_MIRROR:-https://mirrors.aliyun.com/debian}
+    DEBIAN_SECURITY_MIRROR: ${DEBIAN_SECURITY_MIRROR:-https://mirrors.aliyun.com/debian-security}
+    TZ: ${TZ:-Asia/Shanghai}
+
+x-op-image: &op_image
+  image: openproject-zh:${OPENPROJECT_IMAGE_TAG:-12.5.8}
+  build: *op_build
+
+x-op-app: &op_app
+  <<: [*op_image, *restart_policy]
+  logging: *default-logging
+  environment:
+    TZ: ${TZ:-Asia/Shanghai}
+    LANG: zh_CN.UTF-8
+    LC_ALL: zh_CN.UTF-8
+    SECRET_KEY_BASE: ${SECRET_KEY_BASE:?请在 .env 设置 SECRET_KEY_BASE}
+    OPENPROJECT_HTTPS: "${OPENPROJECT_HTTPS:-false}"
+    OPENPROJECT_HSTS: "${OPENPROJECT_HSTS:-false}"
+    OPENPROJECT_HOST__NAME: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
+    OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
+    OPENPROJECT_EDITION: "${OPENPROJECT_EDITION:-standard}"
+    OPENPROJECT_DEFAULT__LANGUAGE: "${OPENPROJECT_DEFAULT__LANGUAGE:-zh-CN}"
+    OPENPROJECT_AVAILABLE__LANGUAGES: "${OPENPROJECT_AVAILABLE__LANGUAGES:-zh-CN,en}"
+    OPENPROJECT_DISABLED__MODULES: "${OPENPROJECT_DISABLED__MODULES:-}"
+    OPENPROJECT_DEFAULT__PROJECTS__MODULES: "${OPENPROJECT_DEFAULT__PROJECTS__MODULES:-work_package_tracking,news,wiki,calendar,gantt,costs,reporting,budgets,meetings,board_view}"
+    OPENPROJECT_INSTALLATION__TYPE: docker
+    RAILS_ENV: production
+    RAILS_LOG_TO_STDOUT: "${RAILS_LOG_TO_STDOUT:-1}"
+    RAILS_CACHE_STORE: memcache
+    OPENPROJECT_CACHE__MEMCACHE__SERVER: cache:11211
+    DATABASE_URL: "${DATABASE_URL:-postgres://openproject:p4ssw0rd@db:5432/openproject?pool=20&encoding=unicode&reconnect=true}"
+    RAILS_MIN_THREADS: ${RAILS_MIN_THREADS:-4}
+    RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-16}
+    IMAP_ENABLED: "${IMAP_ENABLED:-false}"
+  volumes:
+    - ${OPDATA:-./data/openproject}:/var/openproject/assets
+    - ${OPLOG:-./logs/openproject}:/app/log
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  command: ["/bin/bash", "-lc", "ensure-native-modules && exec ./docker/prod/web"]
+
+services:
+  db:
+    <<: *restart_policy
+    logging: *default-logging
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
+      args:
+        POSTGRES_IMAGE_TAG: ${POSTGRES_IMAGE_TAG:-13.21-bullseye}
+        DEBIAN_MIRROR: ${DEBIAN_MIRROR:-https://mirrors.aliyun.com/debian}
+        DEBIAN_SECURITY_MIRROR: ${DEBIAN_SECURITY_MIRROR:-https://mirrors.aliyun.com/debian-security}
+        TZ: ${TZ:-Asia/Shanghai}
+    image: openproject-zh-postgres:${POSTGRES_IMAGE_TAG:-13.21-bullseye}
+    stop_grace_period: 10s
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ${PGDATA:-./data/postgres}:/var/lib/postgresql/data
+      - ${PGLOG:-./logs/postgres}:/var/log/postgresql
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/openproject.conf:ro
+      - ./docker/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      LANG: zh_CN.UTF-8
+      POSTGRES_USER: ${POSTGRES_USER:-openproject}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-p4ssw0rd}
+      POSTGRES_DB: ${POSTGRES_DB:-openproject}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=zh_CN.UTF-8 --lc-collate=zh_CN.UTF-8 --lc-ctype=zh_CN.UTF-8"
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/openproject.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-openproject} -d ${POSTGRES_DB:-openproject}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks:
+      - backend
+
+  cache:
+    <<: *restart_policy
+    logging: *default-logging
+    image: memcached:${MEMCACHED_IMAGE_TAG:-1.6.22-alpine}
+    command: ["-m", "64"]
+    networks:
+      - backend
+
+  seeder:
+    <<: *op_app
+    restart: on-failure
+    command: ["/bin/bash", "-lc", "ensure-native-modules && exec ./docker/prod/seeder"]
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+    networks:
+      - backend
+
+  web:
+    <<: *op_app
+    command: ["/bin/bash", "-lc", "ensure-native-modules && exec ./docker/prod/web"]
+    expose:
+      - "8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+      seeder:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+    networks:
+      - frontend
+      - backend
+
+  worker:
+    <<: *op_app
+    command: ["/bin/bash", "-lc", "ensure-native-modules && exec ./docker/prod/worker"]
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+      seeder:
+        condition: service_completed_successfully
+    networks:
+      - backend
+
+  cron:
+    <<: *op_app
+    command: ["/bin/bash", "-lc", "ensure-native-modules && exec ./docker/prod/cron"]
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+      seeder:
+        condition: service_completed_successfully
+    networks:
+      - backend
+
+  proxy:
+    <<: [*op_image, *restart_policy]
+    logging: *default-logging
+    command: "./docker/prod/proxy"
+    ports:
+      - "${PORT:-8080}:80"
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      APP_HOST: web
+      OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
+    depends_on:
+      web:
+        condition: service_started
+    networks:
+      - frontend
+
+networks:
+  frontend:
+  backend:
+
+# 默认使用绑定挂载（见 .env 的 PGDATA/OPDATA）；下列 named volume 作为备用名
+volumes:
+  pgdata:
+  opdata:

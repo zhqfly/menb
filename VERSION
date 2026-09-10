@@ -1,0 +1,8 @@
+# 用户需求中的 “OpenProject 12.13.0” 在 opf/openproject 官方仓库不存在。
+# 12 系列官方最终补丁为 v12.5.8（Docker Hub: openproject/community:12.5.8）。
+# 本方案锁定该版本，不升级 OpenProject、不升级基础镜像系统包。
+
+OPENPROJECT_UPSTREAM_TAG=v12.5.8
+OPENPROJECT_IMAGE_TAG=12.5.8
+POSTGRES_IMAGE_TAG=13.21-bullseye
+MEMCACHED_IMAGE_TAG=1.6.22-alpine
