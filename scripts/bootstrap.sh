@@ -3,7 +3,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "${ROOT}"
 
-chmod +x scripts/*.sh docker/postgres/initdb/*.sh docker/openproject/*.sh
+find scripts docker/postgres/initdb docker/openproject -name '*.sh' -type f -exec chmod 0755 {} +
 ./scripts/fix-permissions.sh
 
 if [ ! -f .env ]; then
