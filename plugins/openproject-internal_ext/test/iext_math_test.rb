@@ -1,3 +1,6 @@
+# NOTICE: GPLv3 企业内部自用。仅内部分发，不自商用，不对外开源。
+# OpenProject 12.5.8 plugin openproject-internal_ext. See /NOTICE.
+
 # 与 OpenProject 12.5.8 官方镜像一致：Rails ~> 7.0（上游并非 Rails 6）。
 # 本文件不引入新 gem，仅验证 EVM 时间占比与 CPM 工期公式。
 require 'minitest/autorun'

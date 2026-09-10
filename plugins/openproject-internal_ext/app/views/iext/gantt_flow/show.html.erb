@@ -32,6 +32,38 @@
       <% end %>
     </ul>
   <% end %>
+  <% if @compare&.any? %>
+    <h3>与最近进度基线偏差</h3>
+    <table class="generic-table">
+      <thead><tr><th>任务</th><th>基线完成%</th><th>当前完成%</th><th>基线截止日期</th><th>当前截止日期</th><th>延期</th></tr></thead>
+      <tbody>
+        <% @compare.each do |row| %>
+          <tr>
+            <td><%= row[:subject] %></td>
+            <td><%= row[:done_base] %></td>
+            <td><%= row[:done_now] %></td>
+            <td><%= row[:due_base] %></td>
+            <td><%= row[:due_now] %></td>
+            <td><%= row[:delayed] ? '是' : '' %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+  <h3>延期追溯</h3>
+  <% if iext_manager?(@project) %>
+    <%= form_tag iext_gantt_flow_delay_traces_path(project_id: @project.id), method: :post, class: 'iext-form' do %>
+      <%= select_tag 'iext_delay_trace[work_package_id]', options_from_collection_for_select(@late_wps, :id, :subject), include_blank: '任务' %>
+      <%= number_field_tag 'iext_delay_trace[days_late]', 1, min: 0 %>
+      <%= text_field_tag 'iext_delay_trace[reason]', nil, placeholder: '延期原因' %>
+      <%= submit_tag t('button_create'), class: 'button' %>
+    <% end %>
+  <% end %>
+  <ul>
+    <% @delay_traces.each do |d| %>
+      <li><%= d.due_on || d.created_at.to_date %> <%= d.reason %>（<%= d.days_late %> 天）— <%= d.user&.name %></li>
+    <% end %>
+  </ul>
   <h3>进度基线</h3>
   <ul>
     <% @baselines.each do |b| %>

@@ -1,3 +1,6 @@
+# NOTICE: GPLv3 企业内部自用。仅内部分发，不自商用，不对外开源。
+# OpenProject 12.5.8 plugin openproject-internal_ext. See /NOTICE.
+
 class GrantIextPermissionsAndSeeds < ActiveRecord::Migration[7.0]
   def up
     manager_perms = %i[

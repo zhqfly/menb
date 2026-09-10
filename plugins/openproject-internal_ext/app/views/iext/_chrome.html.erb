@@ -13,7 +13,16 @@
   .iext-kpi b { display: block; font-size: 20px; }
   .iext-alert { color: #b71c1c; }
   .iext-toolbar { margin: 8px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .iext-form input, .iext-form select, .iext-form textarea { margin: 0 6px 8px 0; }
+  .iext-popup { background: #fff3e0; border: 1px solid #ef6c00; padding: 12px; margin: 8px 0; }
+  .iext-bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .iext-bar-row > span { width: 90px; }
+  .iext-bar { flex: 1; background: #eee; height: 10px; }
+  .iext-bar > span { display: block; height: 10px; background: #1565c0; }
+  @media (max-width: 720px) {
+    .iext-heat { font-size: 10px; display: block; overflow-x: auto; }
+    .iext-kpis { flex-direction: column; }
+    .iext-toolbar { flex-direction: column; align-items: stretch; }
+  }
 </style>
 <div class="iext-wrap">
   <h2><%= title %></h2>

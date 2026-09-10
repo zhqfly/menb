@@ -1,3 +1,6 @@
+# NOTICE: GPLv3 企业内部自用。仅内部分发，不自商用，不对外开源。
+# OpenProject 12.5.8 plugin openproject-internal_ext. See /NOTICE.
+
 require 'open_project/plugins'
 
 module OpenProject
@@ -39,21 +42,23 @@ module OpenProject
              caption: :label_iext_evm,
              after: :costs,
              icon: 'icon2 icon-budget',
-             if: ->(project) { project.module_enabled?(:costs) || project.module_enabled?(:budgets) }
+             if: ->(project) { project.module_enabled?(:iext_enterprise) }
 
         menu :project_menu,
              :iext_cost_items,
              { controller: '/iext/cost_items', action: 'index' },
              caption: :label_iext_cost_items,
              after: :iext_evm,
-             icon: 'icon2 icon-cost-types'
+             icon: 'icon2 icon-cost-types',
+             if: ->(project) { project.module_enabled?(:iext_enterprise) }
 
         menu :project_menu,
              :iext_gantt_flow,
              { controller: '/iext/gantt_flow', action: 'show' },
              caption: :label_iext_gantt_flow,
              after: :work_packages,
-             icon: 'icon2 icon-view-timeline'
+             icon: 'icon2 icon-view-timeline',
+             if: ->(project) { project.module_enabled?(:iext_enterprise) }
 
         menu :admin_menu,
              :iext_admin,

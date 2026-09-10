@@ -5,10 +5,30 @@
     <%= submit_tag '查询', class: 'button' %>
   <% end %>
   <div class="iext-toolbar">
-    <%= button_to t('iext.scan_alerts'), iext_resource_load_scan_path(from: @from, to: @to), method: :post, class: 'button -highlight' if iext_admin? %>
+    <%= button_to t('iext.scan_alerts'), iext_resource_load_scan_path(from: @from, to: @to), method: :post, class: 'button -highlight' if iext_global_costs? %>
     <%= link_to t('button_export'), iext_resource_load_export_path(from: @from, to: @to), class: 'button' %>
     <%= link_to t('label_iext_admin'), iext_holidays_path, class: 'button' if iext_admin? %>
   </div>
+
+  <% if @popup_alerts&.any? %>
+    <div class="iext-popup" role="alert">
+      <strong>工时冲突/超负荷预警</strong>
+      <ul>
+        <% @popup_alerts.first(8).each do |a| %>
+          <li><%= a.message %></li>
+        <% end %>
+      </ul>
+    </div>
+    <script>
+      (function () {
+        var key = 'iext-alert-<%= @from %>-<%= @to %>';
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, '1');
+          alert('发现 <%= @popup_alerts.size %> 条负载预警，请查看资源负载页。');
+        }
+      })();
+    </script>
+  <% end %>
 
   <% if @alerts.any? %>
     <h3>预警</h3>

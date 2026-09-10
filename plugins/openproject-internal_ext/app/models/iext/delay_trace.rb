@@ -2,10 +2,11 @@
 # OpenProject 12.5.8 plugin openproject-internal_ext. See /NOTICE.
 
 module Iext
-  class ProgressBaseline < ApplicationRecord
-    self.table_name = 'iext_progress_baselines'
+  class DelayTrace < ApplicationRecord
+    self.table_name = 'iext_delay_traces'
     belongs_to :project
+    belongs_to :work_package, optional: true
     belongs_to :user, optional: true
-    validates :project, :version, presence: true
+    validates :project, :reason, presence: true
   end
 end
