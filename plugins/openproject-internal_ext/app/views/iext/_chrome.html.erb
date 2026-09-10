@@ -1,0 +1,31 @@
+<%# locals: title %>
+<style>
+  .iext-wrap { padding: 12px 16px; }
+  .iext-help { color: #555; margin: 8px 0 16px; }
+  .iext-heat { border-collapse: collapse; font-size: 12px; }
+  .iext-heat th, .iext-heat td { border: 1px solid #ddd; padding: 4px 6px; text-align: center; }
+  .iext-heat td.r0 { background: #f5f5f5; }
+  .iext-heat td.r1 { background: #c8e6c9; }
+  .iext-heat td.r2 { background: #fff59d; }
+  .iext-heat td.r3 { background: #ef9a9a; }
+  .iext-kpis { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+  .iext-kpi { background: #fff; border: 1px solid #e0e0e0; padding: 12px 16px; min-width: 120px; }
+  .iext-kpi b { display: block; font-size: 20px; }
+  .iext-alert { color: #b71c1c; }
+  .iext-toolbar { margin: 8px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .iext-popup { background: #fff3e0; border: 1px solid #ef6c00; padding: 12px; margin: 8px 0; }
+  .iext-bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .iext-bar-row > span { width: 90px; }
+  .iext-bar { flex: 1; background: #eee; height: 10px; }
+  .iext-bar > span { display: block; height: 10px; background: #1565c0; }
+  @media (max-width: 720px) {
+    .iext-heat { font-size: 10px; display: block; overflow-x: auto; }
+    .iext-kpis { flex-direction: column; }
+    .iext-toolbar { flex-direction: column; align-items: stretch; }
+  }
+</style>
+<div class="iext-wrap">
+  <h2><%= title %></h2>
+  <p class="iext-help"><%= t('iext.help.native_kept') %> <%= t('iext.help.member_scope') %></p>
+  <%= yield %>
+</div>

@@ -1,0 +1,105 @@
+en:
+  label_iext_resource_load: Resource load
+  label_iext_reports: Enterprise reports
+  label_iext_evm: EVM & costs
+  label_iext_cost_items: Extra costs
+  label_iext_gantt_flow: Schedule & process
+  label_iext_admin: Enterprise calendar
+  project_module_iext_enterprise: Enterprise extensions
+  permission_view_iext_evm: View EVM
+  permission_manage_iext_evm: Manage EVM snapshots
+  permission_view_iext_cost_items: View extra costs
+  permission_manage_iext_cost_items: Manage extra costs
+  permission_view_iext_gantt_flow: View schedule tools
+  permission_manage_iext_gantt_flow: Manage schedule tools
+  permission_view_iext_reports: View enterprise reports
+  iext:
+    holiday: Holiday / leave
+    shift: Shift rule
+    cost_item: Extra cost
+    categories:
+      material: Material
+      outsource: Outsourcing
+      travel: Travel
+      misc: Misc
+    roles:
+      admin: Administrator (all)
+      manager: Project manager (edit project & costs)
+      member: Member (own time only)
+zh-CN:
+  label_iext_resource_load: 资源负载
+  label_iext_reports: 企业报表
+  label_iext_evm: 挣值与成本
+  label_iext_cost_items: 费用台账
+  label_iext_gantt_flow: 进度与流程
+  label_iext_admin: 企业日历与排班
+  project_module_iext_enterprise: 企业扩展（资源/EVM/流程）
+  permission_view_iext_evm: 查看挣值与成本
+  permission_manage_iext_evm: 管理挣值基线快照
+  permission_view_iext_cost_items: 查看费用台账
+  permission_manage_iext_cost_items: 维护费用台账
+  permission_view_iext_gantt_flow: 查看进度工具
+  permission_manage_iext_gantt_flow: 管理进度基线与顺延
+  permission_view_iext_reports: 查看企业报表
+  button_save: 保存
+  button_create: 创建
+  button_delete: 删除
+  button_export: 导出
+  label_date: 日期
+  label_user: 用户
+  label_project: 项目
+  label_hours: 工时
+  iext:
+    holiday: 节假日/调休
+    shift: 排班规则
+    cost_item: 费用
+    scan_alerts: 扫描负载预警
+    apply_shift: 按依赖顺延后置任务
+    save_baseline: 保存进度基线
+    save_budget_baseline: 保存预算基线
+    apply_template: 套用标准流程模板
+    take_snapshot: 生成挣值快照
+    heatmap: 资源负载热力图
+    idle: 空闲
+    overload: 超负荷
+    conflict: 工时重叠冲突
+    utilization: 资源利用率
+    pv: 计划价值 PV
+    ac: 实际成本 AC
+    ev: 挣值 EV
+    spi: 进度指数 SPI
+    cpi: 成本指数 CPI
+    eac: 完工估算 EAC
+    bac: 完工预算 BAC
+    cv: 成本偏差 CV
+    sv: 进度偏差 SV
+    categories:
+      material: 物料
+      outsource: 外包
+      travel: 差旅
+      misc: 项目杂费
+    reports:
+      progress: 进度复盘报表
+      labor: 人力成本报表
+      utilization: 资源利用率报表
+    template_name: 企业标准全流程
+    stages:
+      initiation: 立项
+      requirement: 需求
+      development: 开发
+      test: 测试
+      delivery: 交付
+      review: 复盘
+    notice:
+      created: 已创建
+      updated: 已更新
+      deleted: 已删除
+      forbidden: 权限不足
+      snapshot_saved: 已保存快照
+      alerts_scanned: 已完成负载扫描
+      shifted: 已按依赖顺延后置任务
+      template_applied: 已套用流程模板
+      baseline_saved: 已保存基线
+    help:
+      native_kept: 原生工时、成本类型、预算与报表模块均保持启用，本插件仅追加字段与页面。
+      member_scope: 普通成员仅能填报本人工时并查看个人相关数据；项目经理可维护项目与成本；管理员可操作全部。

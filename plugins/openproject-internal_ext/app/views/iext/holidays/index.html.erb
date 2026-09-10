@@ -1,0 +1,22 @@
+<%= render layout: 'iext/chrome', locals: { title: t('label_iext_admin') } do %>
+  <p><%= link_to '排班规则', iext_shift_rules_path, class: 'button' %></p>
+  <%= form_for @holiday, url: iext_holidays_path, html: { class: 'iext-form' } do |f| %>
+    <%= f.date_field :occurred_on %>
+    <%= f.text_field :name, placeholder: '名称' %>
+    <%= f.select :kind, Iext::Holiday::KINDS.map { |k| [k, k] } %>
+    <%= f.submit t('button_create'), class: 'button -highlight' %>
+  <% end %>
+  <table class="generic-table">
+    <thead><tr><th>日期</th><th>名称</th><th>类型</th><th></th></tr></thead>
+    <tbody>
+      <% @holidays.each do |h| %>
+        <tr>
+          <td><%= h.occurred_on %></td>
+          <td><%= h.name %></td>
+          <td><%= h.kind %></td>
+          <td><%= button_to t('button_delete'), iext_holiday_path(h), method: :delete, class: 'button' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

@@ -1,0 +1,85 @@
+<%= render layout: 'iext/chrome', locals: { title: t('label_iext_resource_load') } do %>
+  <%= form_tag iext_resource_load_path, method: :get, class: 'iext-toolbar' do %>
+    <label>从 <%= date_field_tag :from, @from %></label>
+    <label>到 <%= date_field_tag :to, @to %></label>
+    <%= submit_tag '查询', class: 'button' %>
+  <% end %>
+  <div class="iext-toolbar">
+    <%= button_to t('iext.scan_alerts'), iext_resource_load_scan_path(from: @from, to: @to), method: :post, class: 'button -highlight' if iext_global_costs? %>
+    <%= link_to t('button_export'), iext_resource_load_export_path(from: @from, to: @to), class: 'button' %>
+    <%= link_to t('label_iext_admin'), iext_holidays_path, class: 'button' if iext_admin? %>
+  </div>
+
+  <% if @popup_alerts&.any? %>
+    <div class="iext-popup" role="alert">
+      <strong>工时冲突/超负荷预警</strong>
+      <ul>
+        <% @popup_alerts.first(8).each do |a| %>
+          <li><%= a.message %></li>
+        <% end %>
+      </ul>
+    </div>
+    <script>
+      (function () {
+        var key = 'iext-alert-<%= @from %>-<%= @to %>';
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, '1');
+          alert('发现 <%= @popup_alerts.size %> 条负载预警，请查看资源负载页。');
+        }
+      })();
+    </script>
+  <% end %>
+
+  <% if @alerts.any? %>
+    <h3>预警</h3>
+    <ul>
+      <% @alerts.each do |a| %>
+        <li class="iext-alert"><%= a.message %>（<%= a.kind %>）</li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <h3><%= t('iext.heatmap') %></h3>
+  <table class="iext-heat">
+    <thead>
+      <tr>
+        <th>人员</th>
+        <% @days.each do |d| %>
+          <th><%= d.strftime('%m-%d') %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= user.name %></td>
+          <% @days.each do |day| %>
+            <% cell = @grid[[user.id, day]] %>
+            <% ratio = cell ? cell[:ratio].to_f : 0 %>
+            <% css = if cell && (cell[:holiday] || (cell[:weekend] && cell[:hours].zero?)) then 'r0'
+                     elsif ratio > 1 then 'r3'
+                     elsif ratio >= 0.8 then 'r2'
+                     elsif ratio > 0 then 'r1'
+                     else 'r0' end %>
+            <td class="<%= css %>" title="容量 <%= cell && cell[:capacity] %>"><%= cell && cell[:hours].to_f > 0 ? cell[:hours] : '' %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <h3><%= t('iext.utilization') %></h3>
+  <table class="generic-table">
+    <thead><tr><th>人员</th><th>工时</th><th>容量</th><th>利用率</th></tr></thead>
+    <tbody>
+      <% @utilization.each do |r| %>
+        <tr>
+          <td><%= r[:user].name %></td>
+          <td><%= r[:hours].round(2) %></td>
+          <td><%= r[:capacity].round(2) %></td>
+          <td><%= r[:utilization].round(1) %>%</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

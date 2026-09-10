@@ -1,0 +1,24 @@
+<%= render layout: 'iext/chrome', locals: { title: t('iext.shift') } do %>
+  <p><%= link_to '节假日', iext_holidays_path, class: 'button' %></p>
+  <%= form_for @rule, url: iext_shift_rules_path, html: { class: 'iext-form' } do |f| %>
+    <%= f.select :user_id, @users.map { |u| [u.name, u.id] } %>
+    <%= f.select :weekday, (0..6).map { |d| [%w[日 一 二 三 四 五 六][d], d] } %>
+    <%= f.number_field :capacity_hours, step: 0.5 %>
+    <%= f.text_field :shift_name, placeholder: '班次名' %>
+    <%= f.submit t('button_create'), class: 'button -highlight' %>
+  <% end %>
+  <table class="generic-table">
+    <thead><tr><th>人员</th><th>星期</th><th>容量</th><th>班次</th><th></th></tr></thead>
+    <tbody>
+      <% @rules.each do |r| %>
+        <tr>
+          <td><%= r.user&.name %></td>
+          <td><%= r.weekday %></td>
+          <td><%= r.capacity_hours %></td>
+          <td><%= r.shift_name %></td>
+          <td><%= button_to t('button_delete'), iext_shift_rule_path(r), method: :delete, class: 'button' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

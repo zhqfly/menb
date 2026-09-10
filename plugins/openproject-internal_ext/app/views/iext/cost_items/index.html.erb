@@ -1,0 +1,32 @@
+<%= render layout: 'iext/chrome', locals: { title: t('label_iext_cost_items') } do %>
+  <% if iext_manager?(@project) || iext_admin? %>
+    <%= form_for @cost_item, url: iext_cost_items_path, html: { class: 'iext-form' } do |f| %>
+      <%= f.hidden_field :project_id, value: @project&.id || @cost_item.project_id %>
+      <%= f.text_field :subject, placeholder: '摘要' %>
+      <%= f.select :category, Iext::CostItem::CATEGORIES.map { |c| [t("iext.categories.#{c}"), c] } %>
+      <%= f.number_field :amount, step: 0.01, placeholder: '金额' %>
+      <%= f.date_field :occurred_on %>
+      <%= f.text_field :vendor, placeholder: '供应商/对象' %>
+      <%= f.submit t('button_create'), class: 'button -highlight' %>
+    <% end %>
+  <% end %>
+  <table class="generic-table">
+    <thead><tr><th>日期</th><th>类别</th><th>摘要</th><th>金额</th><th>人员</th><th></th></tr></thead>
+    <tbody>
+      <% @cost_items.each do |item| %>
+        <tr>
+          <td><%= item.occurred_on %></td>
+          <td><%= t("iext.categories.#{item.category}") %></td>
+          <td><%= item.subject %></td>
+          <td><%= item.amount %></td>
+          <td><%= item.user&.name %></td>
+          <td>
+            <% if iext_manager?(item.project) || iext_admin? %>
+              <%= button_to t('button_delete'), iext_cost_item_path(item, project_id: item.project_id), method: :delete, class: 'button' %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

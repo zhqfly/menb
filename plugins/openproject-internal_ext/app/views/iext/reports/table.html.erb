@@ -1,0 +1,13 @@
+<%= render layout: 'iext/chrome', locals: { title: t("iext.reports.#{@kind}") } do %>
+  <p><%= link_to 'CSV 导出', url_for(format: :csv), class: 'button' %></p>
+  <table class="generic-table">
+    <thead>
+      <tr><% @headers.each do |h| %><th><%= h %></th><% end %></tr>
+    </thead>
+    <tbody>
+      <% @rows.each do |row| %>
+        <tr><% row.each do |col| %><td><%= col %></td><% end %></tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
